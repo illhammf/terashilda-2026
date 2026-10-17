@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\MenuItem;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class CartComponent extends Component
@@ -25,6 +26,12 @@ class CartComponent extends Component
     public function close(): void
     {
         $this->isOpen = false;
+    }
+
+    #[On('addToCart')]
+    public function addToCart(int $id): void
+    {
+        $this->add($id);
     }
 
     public function add(int $menuItemId): void

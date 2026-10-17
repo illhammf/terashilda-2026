@@ -1,56 +1,51 @@
 @php
-    $testimonials = \App\Models\Testimonial::approved()->latest()->get();
-    $avgRating = $testimonials->avg('rating') ?? 0;
+    use App\Models\Testimonial;
+
+    $testimonials = Testimonial::approved()->latest()->take(9)->get();
+    $avgRating = round((float) ($testimonials->avg('rating') ?? 0), 1);
+    $avatarBg = ['#F5B301', '#DDF0E4', '#FFDFD6', '#E3EFFB'];
 @endphp
 
-<section id="testimoni" class="py-24 bg-stone-900 relative overflow-hidden">
-    <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-orange-900/30 blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-red-900/30 blur-[100px]"></div>
-    </div>
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16 reveal-on-scroll">
-            <div class="inline-flex items-center gap-2 rounded-full bg-orange-500/20 px-4 py-1.5 text-xs font-bold text-orange-400 mb-4">
-                TESTIMONI
-            </div>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">Kata Mereka</h2>
-            <p class="mt-3 text-stone-400 max-w-lg mx-auto">Apa kata pelanggan tentang kami</p>
+<section id="testimoni" class="section testi-section">
+    <div class="wrap">
+        <div class="section-head center" data-reveal>
+            <span class="sticker rot-1">Testimoni</span>
+            <h2 class="section-title display">Kata <span class="mark-2">Mereka</span></h2>
+            <p class="section-sub head-center">Cerita jujur dari pelanggan yang sudah mencoba.</p>
             @if($testimonials->count() > 0)
-                <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-4 py-2">
-                    <span class="text-orange-400 text-xs tracking-tight">★★★★★</span>
-                    <span class="text-sm font-bold text-white">{{ number_format($avgRating, 1) }}</span>
-                    <span class="text-xs text-stone-400">({{ $testimonials->count() }} ulasan)</span>
+                <div class="rating-banner" style="margin-top:22px">
+                    <span class="big display">{{ number_format($avgRating, 1, ',', '.') }}</span>
+                    <span class="stars">
+                        @for($i = 1; $i <= 5; $i++)
+                            <svg class="{{ $i <= round($avgRating) ? '' : 'off' }}" viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29c.13.42.53.7.95.7h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12L2.98 8.73c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.7l1.07-3.29z"/></svg>
+                        @endfor
+                    </span>
+                    <span style="font-size:0.8rem;opacity:0.8">{{ $testimonials->count() }} ulasan pelanggan</span>
                 </div>
             @endif
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="testi-grid">
             @forelse($testimonials as $testimonial)
-                <div class="glass-card rounded-3xl p-6 hover:border-orange-400/50 transition-all duration-300 shadow-xl shadow-stone-900/50">
-                    <div class="flex items-center gap-0.5 mb-4">
+                <div class="testi-card" style="--tilt: {{ $loop->index % 2 === 0 ? '-1.2deg' : '1.1deg' }}" data-reveal data-delay="{{ ($loop->index % 3) * 90 }}">
+                    <span class="tape" style="background: {{ $loop->index % 2 === 0 ? 'rgba(46,139,87,0.5)' : 'rgba(228,87,46,0.45)' }}"></span>
+                    <span class="stars">
                         @for($i = 1; $i <= 5; $i++)
-                            <svg class="h-4 w-4 {{ $i <= $testimonial->rating ? 'text-orange-400' : 'text-stone-700' }}" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                            </svg>
+                            <svg class="{{ $i <= $testimonial->rating ? '' : 'off' }}" viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29c.13.42.53.7.95.7h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12L2.98 8.73c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.7l1.07-3.29z"/></svg>
                         @endfor
-                    </div>
-                    <p class="text-sm text-stone-300 leading-relaxed mb-5 italic">"{{ $testimonial->message }}"</p>
-                    <div class="flex items-center gap-3">
-                        <div class="h-11 w-11 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-orange-500/40">
-                            {{ strtoupper(substr($testimonial->name, 0, 1)) }}
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-white">{{ $testimonial->name }}</p>
-                            <p class="text-xs text-stone-400 uppercase tracking-widest">{{ $testimonial->origin }}</p>
-                        </div>
+                    </span>
+                    <p class="testi-msg">"{{ $testimonial->message }}"</p>
+                    <div class="testi-who">
+                        <span class="testi-avatar" style="background: {{ $avatarBg[$loop->index % 4] }}">{{ strtoupper(substr($testimonial->name, 0, 1)) }}</span>
+                        <span>
+                            <span class="testi-name display" style="display:block">{{ $testimonial->name }}</span>
+                            <span class="testi-origin">{{ $testimonial->origin }}</span>
+                        </span>
                     </div>
                 </div>
             @empty
-                <div class="col-span-full text-center py-16 reveal-on-scroll">
-                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 mx-auto mb-4">
-                        <svg class="h-8 w-8 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                    </div>
-                    <p class="text-stone-400">Belum ada testimoni. Jadilah yang pertama!</p>
+                <div class="card center" style="padding:44px;grid-column:1/-1" data-reveal>
+                    <p style="font-weight:700">Belum ada testimoni. Jadilah yang pertama mencoba!</p>
                 </div>
             @endforelse
         </div>

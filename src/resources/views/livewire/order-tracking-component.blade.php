@@ -1,136 +1,112 @@
-<div class="bg-white rounded-3xl border border-stone-200 p-8 sm:p-10 shadow-lg shadow-stone-100/50 reveal-on-scroll">
-    <div class="flex items-center gap-3 mb-8">
-        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-900 text-white shadow-lg shadow-orange-500/20">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        </div>
-        <div>
-            <h2 class="text-xl font-bold text-stone-900">Lacak Pesanan</h2>
-            <p class="text-xs text-stone-500">Masukkan nomor pesanan untuk melihat status</p>
-        </div>
+<div>
+    <div class="card" style="padding:22px;margin-bottom:26px">
+        <form wire:submit="track" style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:220px">
+                <label class="label">Nomor Pesanan / Nomor HP</label>
+                <input type="text" wire:model="search" class="input" placeholder="Contoh: TH-20260101-XXXXX">
+            </div>
+            <button type="submit" class="btn btn-ink" style="align-self:flex-end" data-magnet data-burst>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                Lacak
+            </button>
+        </form>
+        @error('search') <p class="field-error" style="margin-top:10px">{{ $message }}</p> @enderror
     </div>
 
-    <form wire:submit="track" class="flex gap-3 mb-10">
-        <input type="text" wire:model="search" class="flex-1 rounded-xl border-0 px-4 py-3.5 text-sm ring-1 ring-inset ring-stone-300 focus:ring-2 focus:ring-orange-500 bg-stone-50" placeholder="Masukkan nomor pesanan (TH-20260101-XXXXX)">
-        <button type="submit" class="rounded-xl bg-stone-900 px-6 py-3.5 text-sm font-bold text-white hover:bg-stone-800 transition-colors shadow-md shadow-orange-500/20">
-            Lacak
-        </button>
-    </form>
-
-    @error('search') <p class="mb-4 text-sm text-red-500">{{ $message }}</p> @endError
-
     @if($notFound)
-        <div class="text-center py-12">
-            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100 mx-auto mb-4">
-                <svg class="h-8 w-8 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            </div>
-            <p class="text-stone-500">Pesanan tidak ditemukan. Periksa kembali nomor pesanan Anda.</p>
+        <div class="card center" style="padding:46px 24px" data-reveal="scale">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="width:64px;height:64px;margin:0 auto 14px;opacity:0.5"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path><path d="M8.5 11h5"></path></svg>
+            <p style="font-weight:700">Pesanan tidak ditemukan</p>
+            <p style="font-size:0.85rem;color:var(--ink-soft);margin-top:6px">Periksa kembali nomor pesanan atau nomor HP yang kamu pakai saat memesan.</p>
         </div>
     @endif
 
     @if($order)
-        <div class="space-y-8">
-            <div class="rounded-3xl bg-stone-900 p-6 text-white relative overflow-hidden shadow-2xl shadow-orange-500/20">
-                <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-orange-500 blur-[60px] opacity-20"></div>
-                <div class="relative">
-                    <div class="flex justify-between items-start mb-5">
-                        <div>
-                            <p class="text-xs text-stone-400 uppercase tracking-widest font-bold">Nomor Pesanan</p>
-                            <p class="font-bold text-lg mt-0.5">{{ $order->order_number }}</p>
-                        </div>
-                        <span class="inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-bold
-                            @if($order->status === 'pending') bg-yellow-500/20 text-yellow-400
-                            @elseif($order->status === 'confirmed') bg-blue-500/20 text-blue-400
-                            @elseif($order->status === 'processing') bg-indigo-500/20 text-indigo-400
-                            @elseif($order->status === 'ready') bg-green-500/20 text-green-400
-                            @elseif($order->status === 'completed') bg-green-500/20 text-green-400
-                            @else bg-red-500/20 text-red-400
-                            @endif">
-                            {{ $order->status_label }}
-                        </span>
-                    </div>
+        @php
+            $steps = [
+                'pending' => ['label' => 'Pesanan Diterima', 'desc' => 'Pesananmu sudah masuk ke dapur'],
+                'confirmed' => ['label' => 'Dikonfirmasi', 'desc' => 'Pesanan sedang diverifikasi'],
+                'processing' => ['label' => 'Sedang Dimasak', 'desc' => 'Koki kami sedang menyiapkan pesananmu'],
+                'ready' => ['label' => 'Siap Diambil', 'desc' => 'Pesanan siap diambil atau sedang diantar'],
+                'completed' => ['label' => 'Selesai', 'desc' => 'Terima kasih sudah memesan!'],
+            ];
+            $currentIndex = array_search($order->status, array_keys($steps), true);
+            $isCancelled = $order->status === 'cancelled';
+        @endphp
 
-                    <div class="grid grid-cols-2 gap-5 text-sm mt-4">
-                        <div>
-                            <p class="text-stone-400 text-xs">Nama</p>
-                            <p class="font-semibold mt-0.5">{{ $order->customer_name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-stone-400 text-xs">Pembayaran</p>
-                            <p class="font-semibold mt-0.5">{{ $order->payment_method_label ?? '-' }} - {{ $order->payment_status_label }}</p>
-                        </div>
-                        <div>
-                            <p class="text-stone-400 text-xs">Pengambilan</p>
-                            <p class="font-semibold mt-0.5">{{ $order->pickup_type === 'pickup' ? 'Ambil Sendiri' : 'Diantar' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-stone-400 text-xs">Total</p>
-                            <p class="font-bold text-orange-400 mt-0.5">Rp {{ number_format($order->total, 0, ',', '.') }}</p>
-                        </div>
-                    </div>
+        <div class="card" style="padding:26px;margin-bottom:26px" data-reveal="up">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+                <div>
+                    <p class="label" style="margin-bottom:4px">Nomor Pesanan</p>
+                    <p class="display" style="font-size:1.5rem">{{ $order->order_number }}</p>
                 </div>
+                <span class="status-chip status-{{ $order->status }}">{{ $order->status_label }}</span>
             </div>
+            <div class="form-grid-2">
+                <div class="sum-row"><span>Nama</span><b>{{ $order->customer_name }}</b></div>
+                <div class="sum-row"><span>Metode</span><b>{{ $order->pickup_type === 'pickup' ? 'Ambil Sendiri' : 'Diantar' }}</b></div>
+                <div class="sum-row"><span>Pembayaran</span><b>{{ $order->payment_method_label ?? '-' }} ({{ $order->payment_status_label }})</b></div>
+                <div class="sum-row"><span>Total</span><b style="color:var(--cabai)">Rp {{ number_format($order->total, 0, ',', '.') }}</b></div>
+            </div>
+        </div>
 
-            <div>
-                <h3 class="font-bold text-stone-900 mb-5">Status Pesanan</h3>
-                <div class="space-y-5">
-                    @php
-                        $steps = [
-                            'pending' => ['label' => 'Pesanan Diterima', 'desc' => 'Pesanan Anda sudah masuk'],
-                            'confirmed' => ['label' => 'Dikonfirmasi', 'desc' => 'Pesanan sedang diverifikasi'],
-                            'processing' => ['label' => 'Sedang Diproses', 'desc' => 'Sedang dimasak oleh kami'],
-                            'ready' => ['label' => 'Siap Diambil', 'desc' => 'Pesanan siap diambil/diantar'],
-                            'completed' => ['label' => 'Selesai', 'desc' => 'Terima kasih!'],
-                        ];
-                        $currentIndex = array_search($order->status, array_keys($steps));
-                        if ($order->status === 'cancelled') $currentIndex = -1;
-                    @endphp
-
+        @if($isCancelled)
+            <div class="card" style="padding:22px;margin-bottom:26px;background:#FFDFD6" data-reveal="up">
+                <p style="font-weight:800">Pesanan ini dibatalkan.</p>
+                <p style="font-size:0.85rem;color:var(--ink-soft);margin-top:4px">Kalau ada pertanyaan, hubungi kami lewat WhatsApp ya.</p>
+            </div>
+        @else
+            <div class="card" style="padding:26px;margin-bottom:26px" data-reveal="up" data-delay="80">
+                <h3 class="display" style="font-size:1.1rem;margin-bottom:22px">Status Pesanan</h3>
+                <div class="timeline">
                     @foreach($steps as $key => $step)
                         @php
-                            $stepIndex = array_search($key, array_keys($steps));
-                            $isActive = $stepIndex <= $currentIndex && $currentIndex >= 0;
-                            $isCurrent = $stepIndex === $currentIndex && $currentIndex >= 0;
+                            $stepIndex = array_search($key, array_keys($steps), true);
+                            $state = $currentIndex === false ? '' : ($stepIndex < $currentIndex ? 'done' : ($stepIndex === $currentIndex ? 'current' : ''));
                         @endphp
-                        <div class="flex items-center gap-5">
-                            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl transition-all
-                                {{ $isActive ? 'bg-stone-900 text-white shadow-lg shadow-orange-500/40' : 'bg-stone-100 text-stone-400' }}">
-                                @if($stepIndex < $currentIndex)
-                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                                @elseif($isCurrent)
-                                    <span class="h-3.5 w-3.5 rounded-full bg-orange-500 animate-pulse"></span>
+                        <div class="tl-step {{ $state }}">
+                            <div class="tl-node">
+                                @if($state === 'done')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg>
+                                @elseif($state === 'current')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 3"></path><circle cx="12" cy="12" r="9"></circle></svg>
                                 @else
-                                    <span class="h-2 w-2 rounded-full bg-stone-300"></span>
+                                    <span style="width:10px;height:10px;border-radius:50%;background:rgba(35,26,18,0.25);display:block"></span>
                                 @endif
                             </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-semibold {{ $isActive ? 'text-stone-900' : 'text-stone-400' }}">{{ $step['label'] }}</p>
-                                <p class="text-xs {{ $isActive ? 'text-stone-500' : 'text-stone-300' }}">{{ $step['desc'] }}</p>
-                            </div>
-                            @if($isCurrent)
-                                <span class="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-bold text-orange-700">SEKARANG</span>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <div>
-                <h3 class="font-bold text-stone-900 mb-4">Detail Pesanan</h3>
-                <div class="rounded-2xl border border-stone-200 divide-y divide-stone-100">
-                    @foreach($order->items as $item)
-                        <div class="flex justify-between p-5 text-sm">
                             <div>
-                                <p class="font-semibold text-stone-900">{{ $item->menu_name }}</p>
-                                <p class="text-stone-500 text-xs mt-0.5">x{{ $item->quantity }} @ Rp {{ number_format($item->price, 0, ',', '.') }}</p>
-                                @if($item->notes)
-                                    <p class="text-stone-400 text-xs italic mt-0.5">{{ $item->notes }}</p>
-                                @endif
+                                <p class="tl-label">
+                                    {{ $step['label'] }}
+                                    @if($state === 'current')
+                                        <span class="now-chip">SEKARANG</span>
+                                    @endif
+                                </p>
+                                <p class="tl-desc">{{ $step['desc'] }}</p>
                             </div>
-                            <p class="font-bold text-stone-900">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                         </div>
                     @endforeach
                 </div>
             </div>
+        @endif
+
+        <div class="card" style="padding:26px" data-reveal="up" data-delay="140">
+            <h3 class="display" style="font-size:1.1rem;margin-bottom:16px">Detail Pesanan</h3>
+            @foreach($order->items as $item)
+                <div class="sum-row" style="padding:9px 0;border-bottom:1px dashed rgba(35,26,18,0.18)">
+                    <span>
+                        <b style="color:var(--ink)">{{ $item->menu_name }}</b> x{{ $item->quantity }}
+                        @if($item->notes)
+                            <em style="display:block;font-size:0.75rem">Catatan: {{ $item->notes }}</em>
+                        @endif
+                    </span>
+                    <span>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
+                </div>
+            @endforeach
+            <div class="sum-row" style="margin-top:10px"><span>Subtotal</span><span>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span></div>
+            @if($order->delivery_fee > 0)
+                <div class="sum-row"><span>Ongkos Kirim</span><span>Rp {{ number_format($order->delivery_fee, 0, ',', '.') }}</span></div>
+            @endif
+            <div class="sum-row total"><span>Total</span><b>Rp {{ number_format($order->total, 0, ',', '.') }}</b></div>
         </div>
     @endif
 </div>

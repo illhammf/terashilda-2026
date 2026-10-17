@@ -1,59 +1,114 @@
 @php
-    $profile = \App\Models\BusinessProfile::active();
+    use App\Models\BusinessProfile;
+    use App\Models\MenuItem;
+    use App\Models\Testimonial;
+
+    $profile = BusinessProfile::active();
+    $featuredNames = MenuItem::featured()->take(4)->pluck('name')->all();
+    $rotateWords = count($featuredNames) >= 2 ? $featuredNames : ['Mie Jebew Mentai', 'Kwetiaw Sapi', 'Burger Spesial', 'Pangsit Goreng'];
+    $menuCount = MenuItem::available()->count();
+    $avgRating = round((float) (Testimonial::approved()->avg('rating') ?? 4.8), 1);
 @endphp
 
-<section class="relative overflow-hidden hero-gradient min-h-[70vh] flex items-center">
-    <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-400/20 blur-[120px] floatUp float-delay-1"></div>
-        <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-red-400/20 blur-[100px] floatUp float-delay-2"></div>
-        <div class="absolute bottom-[-10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-amber-400/15 blur-[110px] floatUp float-delay-3"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-orange-500/20 blur-[90px] floatUp float-delay-4"></div>
-        <div class="absolute inset-0 opacity-30" style="background-image: url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23c2410c\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-    </div>
-    <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
-        <div class="max-w-3xl reveal-on-scroll">
-            <div class="inline-flex items-center gap-2.5 rounded-full border border-orange-400/40 bg-orange-500/15 px-5 py-2.5 text-xs font-bold text-orange-700 mb-8 animate-slide-up">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-                </span>
-                Sekarang Bisa Pesan Online
-            </div>
-            <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-[1.05] tracking-tight text-stone-900 mb-6 animate-slide-up">
-                Rasanya <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">Beda</span>,<br>
-                Harganya <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">Bersahabat</span>
+<section class="hero">
+    <div id="hero-glow"></div>
+    <div class="wrap hero-grid">
+        <div>
+            <span class="sticker rot-1" data-reveal="left">
+                <span class="ping-dot"></span>
+                Buka Hari Ini &middot; Pesan Online
+            </span>
+            <h1 class="hero-title display" data-reveal="left" data-delay="80">
+                Makan Enak,<br>
+                Kantong Tetap <span class="mark">Aman</span>
             </h1>
-            <p class="mt-4 text-lg sm:text-xl text-stone-600 leading-relaxed max-w-2xl mb-10 animate-slide-up">
-                {{ $profile->description ?? 'Dari Mie Jebew Mentai yang viral hingga kwetiaw, burger, dan pangsit goreng renyah — semua dibuat fresh setiap hari dengan bahan berkualitas. Harganya ramah di kantong mahasiswa!' }}
+            <p class="hero-sub" data-reveal="left" data-delay="160">
+                {{ $profile->description ?? 'Dari Mie Jebew Mentai yang viral hingga kwetiaw, burger, dan pangsit goreng renyah. Dibuat fresh setiap hari dengan bahan pilihan, harga ramah kantong mahasiswa.' }}
             </p>
-            <div class="mt-8 flex flex-wrap gap-4 animate-slide-up">
-                <a href="#menu" class="inline-flex items-center gap-3 rounded-2xl btn-orange px-7 py-4 text-sm font-bold text-white shadow-lg shadow-orange-300 hover:shadow-orange-400 transition-all active:scale-95">
+            <div class="rotator" data-reveal="left" data-delay="220">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c.8 6.5 4.7 10.4 12 12-7.3 1.6-11.2 5.5-12 12-.8-6.5-4.7-10.4-12-12C7.3 10.4 11.2 6.5 12 0z"/></svg>
+                <span>Hari ini mau makan</span>
+                <span class="rotator-word" data-rotate-words="{{ json_encode($rotateWords) }}">{{ $rotateWords[0] }}</span>
+            </div>
+            <div class="hero-cta" data-reveal="left" data-delay="280">
+                <a href="/#menu" class="btn btn-cabai btn-lg" data-magnet data-burst>
                     Lihat Menu
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"></path></svg>
                 </a>
-                <a href="{{ route('order.tracking') }}" class="inline-flex items-center gap-3 rounded-2xl bg-white/80 backdrop-blur px-7 py-4 text-sm font-bold text-stone-900 border border-orange-200 hover:bg-orange-50 hover:text-orange-700 transition-all shadow-lg">
+                <a href="{{ route('order.tracking') }}" class="btn btn-paper btn-lg">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
                     Lacak Pesanan
                 </a>
             </div>
-            <div class="mt-14 flex flex-wrap items-center gap-8 reveal-on-scroll">
-                <div class="flex items-center gap-3">
-                    <div class="flex -space-x-2.5">
-                        <div class="h-11 w-11 rounded-full bg-gradient-to-br from-orange-400 to-red-400 ring-3 ring-stone-900 flex items-center justify-center text-xs font-bold text-white shadow-lg">R</div>
-                        <div class="h-11 w-11 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 ring-3 ring-stone-900 flex items-center justify-center text-xs font-bold text-white shadow-lg">D</div>
-                        <div class="h-11 w-11 rounded-full bg-gradient-to-br from-red-400 to-pink-400 ring-3 ring-stone-900 flex items-center justify-center text-xs font-bold text-white shadow-lg">S</div>
-                        <div class="h-11 w-11 rounded-full bg-stone-800 ring-3 ring-stone-900 flex items-center justify-center text-xs font-bold text-stone-300 shadow-lg">+</div>
-                    </div>
-                    <div>
-                        <p class="text-2xl font-extrabold text-stone-900">500+</p>
-                        <p class="text-xs font-bold uppercase tracking-widest text-orange-600">Pelanggan Puas</p>
-                    </div>
+            <div class="stat-row" data-reveal="left" data-delay="340">
+                <div class="stat">
+                    <span class="stat-num display" data-counter="{{ max($menuCount, 1) }}" data-suffix="+">{{ max($menuCount, 1) }}+</span>
+                    <span class="stat-label">Pilihan Menu</span>
                 </div>
-                <div class="h-10 w-px bg-stone-300"></div>
-                <div class="flex items-center gap-1">
-                    <span class="text-yellow-400 text-xs tracking-tight">★★★★★</span>
-                    <p class="text-xs font-bold uppercase tracking-widest text-orange-600">Rating 4.8</p>
+                <div class="stat-sep"></div>
+                <div class="stat">
+                    <span class="stat-num display" data-counter="500" data-suffix="+">500+</span>
+                    <span class="stat-label">Pelanggan Puas</span>
                 </div>
+                <div class="stat-sep"></div>
+                <div class="stat">
+                    <span class="stat-num display" data-counter="{{ $avgRating }}" data-decimals="1">{{ number_format($avgRating, 1, ',', '.') }}</span>
+                    <span class="stat-label">Rating Pelanggan</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="illust-wrap" data-reveal="right" data-delay="160">
+            <span class="doodle doodle-1" style="--rot:-6deg" data-parallax="0.05">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--pandan)"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+                100% Fresh
+            </span>
+            <span class="doodle doodle-2" style="--rot:4deg" data-parallax="0.09">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.83Z"></path><circle cx="7" cy="7" r="1.5"></circle></svg>
+                Mulai Rp 5.000
+            </span>
+            <span class="doodle doodle-3" style="--rot:-3deg" data-parallax="0.07">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--kunyit)"><path d="M12 0c.8 6.5 4.7 10.4 12 12-7.3 1.6-11.2 5.5-12 12-.8-6.5-4.7-10.4-12-12C7.3 10.4 11.2 6.5 12 0z"/></svg>
+                Rasanya Juara
+            </span>
+
+            <div class="illust-card">
+                @if($profile && $profile->hero_image)
+                    <img src="{{ asset('storage/' . $profile->hero_image) }}" alt="{{ $profile->name }}" class="illust-img">
+                @else
+                    <div class="illust-stage">
+                        <svg viewBox="0 0 420 340" role="img" aria-label="Ilustrasi mangkuk mie">
+                            <path d="M330 56c1.4 11 6.2 15.8 17 17-10.8 1.2-15.6 6-17 17-1.4-11-6.2-15.8-17-17 10.8-1.2 15.6-6 17-17z" fill="#F5B301"/>
+                            <path d="M64 62c1 8 4.6 11.6 12.5 12.5C68.6 75.4 65 79 64 87c-1-8-4.6-11.6-12.5-12.5C59.4 73.6 63 70 64 62z" fill="#E4572E" opacity="0.75"/>
+                            <circle cx="352" cy="264" r="7" fill="#2E8B57" opacity="0.65"/>
+                            <circle cx="76" cy="252" r="6" fill="#F5B301" opacity="0.8"/>
+                            <g class="steam" stroke="#231A12" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.45">
+                                <path d="M150 92c-14-16 12-26 0-44"/>
+                                <path d="M210 84c-14-16 12-26 0-44"/>
+                                <path d="M270 92c-14-16 12-26 0-44"/>
+                            </g>
+                            <path d="M46 192C46 282 120 322 210 322s164-40 164-130Z" fill="#E4572E" stroke="#231A12" stroke-width="7"/>
+                            <g stroke="#231A12" stroke-width="9" stroke-linecap="round">
+                                <line x1="258" y1="48" x2="168" y2="168"/>
+                                <line x1="286" y1="56" x2="200" y2="176"/>
+                            </g>
+                            <g stroke="#F5B301" stroke-width="9" stroke-linecap="round" fill="none">
+                                <path d="M118 158c34-28 82-42 116-28"/>
+                                <path d="M112 180c46-32 108-46 156-26"/>
+                                <path d="M126 202c52-28 118-34 162-12"/>
+                            </g>
+                            <ellipse cx="210" cy="192" rx="164" ry="46" fill="#FFFBF3" stroke="#231A12" stroke-width="7"/>
+                            <circle cx="152" cy="184" r="24" fill="#fff" stroke="#231A12" stroke-width="6"/>
+                            <circle cx="152" cy="184" r="10" fill="#F5B301" stroke="#231A12" stroke-width="4"/>
+                            <path d="M258 166c18 8 32 20 36 34-20 3-40-4-50-16Z" fill="#2E8B57" stroke="#231A12" stroke-width="5" stroke-linejoin="round"/>
+                            <path d="M164 262c28 20 64 20 92 0" stroke="#FFF6E9" stroke-width="10" stroke-linecap="round" fill="none"/>
+                            <path d="M96 238c9 7 18 7 27 0" stroke="#FFE9B8" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.85"/>
+                        </svg>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 </section>
+
+@include('sections.ticker', ['dark' => false])

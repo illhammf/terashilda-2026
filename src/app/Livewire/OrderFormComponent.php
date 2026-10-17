@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Models\Order;
 use App\Models\OrderItem;
-use Filament\Notifications\Notification;
 use Livewire\Component;
 
 class OrderFormComponent extends Component
@@ -95,14 +94,10 @@ class OrderFormComponent extends Component
 
         session()->forget('cart');
 
-        Notification::make()
-            ->success()
-            ->title('Pesanan Berhasil!')
-            ->body("Nomor pesanan Anda: {$order->order_number}")
-            ->send();
-
         $this->reset(['customer_name', 'customer_phone', 'customer_email', 'notes', 'delivery_address']);
         $this->cart = [];
+        $this->delivery_fee = 0;
+        $this->dispatch('cartUpdated', count: 0);
         $this->dispatch('orderCreated', orderNumber: $order->order_number);
     }
 

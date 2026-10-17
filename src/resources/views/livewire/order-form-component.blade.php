@@ -1,117 +1,128 @@
-<div class="bg-white rounded-3xl border border-stone-200 p-8 sm:p-10 shadow-lg shadow-stone-100/50 reveal-on-scroll">
-    <div class="flex items-center gap-3 mb-8">
-        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-900 text-white shadow-lg shadow-orange-500/20">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-        </div>
-        <div>
-            <h2 class="text-xl font-bold text-stone-900">Data Pengiriman</h2>
-            <p class="text-xs text-stone-500">Isi data diri dan detail pesanan Anda</p>
-        </div>
-    </div>
+<div class="form-card">
+    <span class="tape"></span>
 
     @if(empty($cart))
-        <div class="text-center py-16">
-            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100 mx-auto mb-4">
-                <svg class="h-8 w-8 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
-            </div>
-            <p class="text-stone-500 mb-4">Keranjang masih kosong. Silakan pilih menu terlebih dahulu.</p>
-            <a href="/#menu" class="inline-flex items-center gap-2 rounded-xl btn-orange px-7 py-3 text-sm font-bold text-white shadow-lg shadow-orange-300 hover:shadow-orange-400 transition-all active:scale-95">
-                Lihat Menu
-            </a>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16a1 1 0 0 1 1 1 8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8 1 1 0 0 1 1-1Z"></path><path d="M9 7c0-1.5 1-2 1-3.5"></path><path d="M14 7c0-1.5 1-2 1-3.5"></path></svg>
+            <p>Keranjangmu masih kosong.<br>Pilih menu favoritmu dulu ya!</p>
+            <a href="/#menu" class="btn btn-cabai" style="margin-top:8px">Lihat Menu</a>
         </div>
     @else
-        <form wire:submit="submit" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <form wire:submit="submit">
+            <div class="step-head">
+                <span class="step-num display">1</span>
+                <h3 class="display">Data Pemesan</h3>
+            </div>
+            <div class="form-grid-2" style="margin-bottom:18px">
                 <div>
-                    <label class="block text-xs font-bold text-stone-700 mb-1.5 uppercase tracking-widest">Nama Lengkap *</label>
-                    <input type="text" wire:model="customer_name" class="w-full rounded-xl border-0 px-4 py-3.5 text-sm ring-1 ring-inset ring-stone-300 focus:ring-2 focus:ring-orange-500 bg-stone-50" placeholder="Nama Anda">
-                    @error('customer_name') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                    <label class="label">Nama Lengkap *</label>
+                    <input type="text" wire:model="customer_name" class="input" placeholder="Nama kamu">
+                    @error('customer_name') <p class="field-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-stone-700 mb-1.5 uppercase tracking-widest">Nomor HP *</label>
-                    <input type="tel" wire:model="customer_phone" class="w-full rounded-xl border-0 px-4 py-3.5 text-sm ring-1 ring-inset ring-stone-300 focus:ring-2 focus:ring-orange-500 bg-stone-50" placeholder="08xxxxxxxxxx">
-                    @error('customer_phone') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                    <label class="label">Nomor HP *</label>
+                    <input type="tel" wire:model="customer_phone" class="input" placeholder="08xxxxxxxxxx">
+                    @error('customer_phone') <p class="field-error">{{ $message }}</p> @enderror
                 </div>
             </div>
-
-            <div>
-                <label class="block text-xs font-bold text-stone-700 mb-1.5 uppercase tracking-widest">Email (opsional)</label>
-                <input type="email" wire:model="customer_email" class="w-full rounded-xl border-0 px-4 py-3.5 text-sm ring-1 ring-inset ring-stone-300 focus:ring-2 focus:ring-orange-500 bg-stone-50" placeholder="email@contoh.com">
-                @error('customer_email') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+            <div style="margin-bottom:8px">
+                <label class="label">Email (opsional)</label>
+                <input type="email" wire:model="customer_email" class="input" placeholder="email@contoh.com">
+                @error('customer_email') <p class="field-error">{{ $message }}</p> @enderror
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-stone-700 mb-2 uppercase tracking-widest">Metode Pengambilan</label>
-                <div class="grid grid-cols-2 gap-3">
-                    <label class="cursor-pointer">
-                        <input type="radio" wire:model="pickup_type" value="pickup" class="peer sr-only">
-                        <div class="rounded-xl border-2 border-stone-200 p-5 text-center text-sm font-semibold text-stone-600 peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all shadow-sm hover:shadow-md">
-                            <svg class="h-5 w-5 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                            Ambil Sendiri
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" wire:model="pickup_type" value="delivery" class="peer sr-only">
-                        <div class="rounded-xl border-2 border-stone-200 p-5 text-center text-sm font-semibold text-stone-600 peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all shadow-sm hover:shadow-md">
-                            <svg class="h-5 w-5 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
-                            Diantar
-                        </div>
-                    </label>
-                </div>
+            <div class="step-head">
+                <span class="step-num display">2</span>
+                <h3 class="display">Metode Pengambilan</h3>
             </div>
-
+            <div class="form-grid-2" style="margin-bottom:18px">
+                <label class="choice">
+                    <input type="radio" wire:model.live="pickup_type" value="pickup">
+                    <span class="choice-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7V6a6 6 0 1 1 12 0v1"></path><path d="M4 7h16l1 13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2L4 7Z"></path></svg>
+                        Ambil Sendiri
+                    </span>
+                </label>
+                <label class="choice">
+                    <input type="radio" wire:model.live="pickup_type" value="delivery">
+                    <span class="choice-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z"></path><path d="M15 18a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z"></path><path d="M13 6h4l3 5v5h-1"></path><path d="M9 18H5V6h8v12"></path></svg>
+                        Diantar (+Rp 5.000)
+                    </span>
+                </label>
+            </div>
             @if($pickup_type === 'delivery')
-                <div>
-                    <label class="block text-xs font-bold text-stone-700 mb-1.5 uppercase tracking-widest">Alamat Pengantaran *</label>
-                    <textarea wire:model="delivery_address" rows="2" class="w-full rounded-xl border-0 px-4 py-3.5 text-sm ring-1 ring-inset ring-stone-300 focus:ring-2 focus:ring-orange-500 bg-stone-50 resize-none" placeholder="Alamat lengkap untuk pengantaran"></textarea>
-                    @error('delivery_address') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                <div style="margin-bottom:18px">
+                    <label class="label">Alamat Pengantaran *</label>
+                    <textarea wire:model="delivery_address" rows="2" class="input" style="resize:none" placeholder="Alamat lengkap, patokan, nomor kos"></textarea>
+                    @error('delivery_address') <p class="field-error">{{ $message }}</p> @enderror
                 </div>
             @endif
 
-            <div>
-                <label class="block text-xs font-bold text-stone-700 mb-2 uppercase tracking-widest">Metode Pembayaran</label>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    @foreach(['cash' => 'Tunai', 'transfer' => 'Transfer', 'qris' => 'QRIS', 'ewallet' => 'E-Wallet'] as $value => $label)
-                        <label class="cursor-pointer">
-                            <input type="radio" wire:model="payment_method" value="{{ $value }}" class="peer sr-only">
-                            <div class="rounded-xl border-2 border-stone-200 p-3 text-center text-xs font-bold text-stone-600 peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all shadow-sm hover:shadow-md">
-                                {{ $label }}
-                            </div>
-                        </label>
-                    @endforeach
-                </div>
+            <div class="step-head">
+                <span class="step-num display">3</span>
+                <h3 class="display">Metode Pembayaran</h3>
+            </div>
+            <div class="form-grid-4" style="margin-bottom:18px">
+                <label class="choice">
+                    <input type="radio" wire:model="payment_method" value="cash">
+                    <span class="choice-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><circle cx="12" cy="12" r="3"></circle></svg>
+                        Tunai
+                    </span>
+                </label>
+                <label class="choice">
+                    <input type="radio" wire:model="payment_method" value="transfer">
+                    <span class="choice-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 21v-6h6v6"></path></svg>
+                        Transfer
+                    </span>
+                </label>
+                <label class="choice">
+                    <input type="radio" wire:model="payment_method" value="qris">
+                    <span class="choice-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><path d="M14 14h3v3h-3zM20 20h1M14 20h1M20 14h1"></path></svg>
+                        QRIS
+                    </span>
+                </label>
+                <label class="choice">
+                    <input type="radio" wire:model="payment_method" value="ewallet">
+                    <span class="choice-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M2 10h20"></path><path d="M16 15h3"></path></svg>
+                        E-Wallet
+                    </span>
+                </label>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-stone-700 mb-1.5 uppercase tracking-widest">Catatan</label>
-                <textarea wire:model="notes" rows="2" class="w-full rounded-xl border-0 px-4 py-3.5 text-sm ring-1 ring-inset ring-stone-300 focus:ring-2 focus:ring-orange-500 bg-stone-50 resize-none" placeholder="Catatan untuk pesanan (opsional)"></textarea>
+            <div style="margin-bottom:24px">
+                <label class="label">Catatan Pesanan (opsional)</label>
+                <textarea wire:model="notes" rows="2" class="input" style="resize:none" placeholder="Contoh: level pedas 3, tanpa bawang"></textarea>
+                @error('notes') <p class="field-error">{{ $message }}</p> @enderror
             </div>
 
-            <div class="rounded-2xl bg-stone-50 border border-stone-200 p-6 space-y-3">
+            <div class="summary-card" style="margin-bottom:24px">
+                <h4 class="display" style="font-size:0.95rem;margin-bottom:12px">Ringkasan Pesanan</h4>
                 @foreach($cart as $item)
-                    <div class="flex justify-between text-sm">
-                        <span class="text-stone-600">{{ $item['name'] }} <span class="text-stone-400">x{{ $item['quantity'] }}</span></span>
-                        <span class="font-bold text-stone-900">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
+                    <div class="sum-row">
+                        <span>{{ $item['name'] }} x{{ $item['quantity'] }}</span>
+                        <span>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
                     </div>
                 @endforeach
-                <div class="border-t border-stone-200 pt-3 flex justify-between text-sm">
-                    <span class="text-stone-500">Subtotal</span>
-                    <span class="font-bold text-stone-900">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                <div class="sum-row" style="border-top:2px dashed rgba(35,26,18,0.25);margin-top:8px;padding-top:10px">
+                    <span>Subtotal</span>
+                    <span>Rp {{ number_format($this->subtotal, 0, ',', '.') }}</span>
                 </div>
                 @if($delivery_fee > 0)
-                    <div class="flex justify-between text-sm">
-                        <span class="text-stone-500">Ongkir</span>
-                        <span class="font-bold text-stone-900">Rp {{ number_format($delivery_fee, 0, ',', '.') }}</span>
-                    </div>
+                    <div class="sum-row"><span>Ongkos Kirim</span><span>Rp {{ number_format($delivery_fee, 0, ',', '.') }}</span></div>
                 @endif
-                <div class="flex justify-between text-lg font-bold border-t border-stone-200 pt-3">
-                    <span class="text-stone-900">Total</span>
-                    <span class="text-orange-600">Rp {{ number_format($total, 0, ',', '.') }}</span>
-                </div>
+                <div class="sum-row total"><span>Total Bayar</span><b>Rp {{ number_format($this->total, 0, ',', '.') }}</b></div>
             </div>
 
-            <button type="submit" class="w-full rounded-xl btn-orange py-4 text-sm font-bold text-white shadow-lg shadow-orange-300 hover:shadow-orange-400 transition-all active:scale-95">
-                Buat Pesanan
+            @error('cart') <p class="field-error" style="margin-bottom:12px">{{ $message }}</p> @enderror
+
+            <button type="submit" class="btn btn-cabai btn-lg btn-block" data-burst>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg>
+                Buat Pesanan Sekarang
             </button>
         </form>
     @endif

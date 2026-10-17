@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\ContactMessage;
-use Filament\Notifications\Notification;
 use Livewire\Component;
 
 class ContactFormComponent extends Component
@@ -39,11 +38,7 @@ class ContactFormComponent extends Component
             'message' => $this->contact_message,
         ]);
 
-        Notification::make()
-            ->success()
-            ->title('Pesan Terkirim!')
-            ->body('Terima kasih atas pesan Anda. Kami akan segera merespons.')
-            ->send();
+        $this->dispatch('notify', message: 'Pesan terkirim! Kami akan segera merespons.');
 
         $this->reset(['contact_name', 'contact_email', 'contact_subject', 'contact_message']);
     }

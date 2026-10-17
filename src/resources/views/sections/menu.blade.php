@@ -1,111 +1,118 @@
 @php
-    $categories = \App\Models\Category::where('is_active', true)->orderBy('sort_order')->get();
-    $menuItems = \App\Models\MenuItem::with('category')->available()->orderBy('sort_order')->get();
+    use App\Models\Category;
+    use App\Models\MenuItem;
+
+    $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
+    $menuItems = MenuItem::with('category')->available()->orderBy('sort_order')->get();
+    $illColors = [
+        'mie-jebew' => ['bg' => '#FFE3D6', 'fg' => '#E4572E'],
+        'kwetiaw' => ['bg' => '#FFEFC2', 'fg' => '#B07C00'],
+        'burger' => ['bg' => '#E2F0E7', 'fg' => '#2E8B57'],
+        'pangsit' => ['bg' => '#FFE9B8', 'fg' => '#C7461F'],
+        'minuman' => ['bg' => '#E3EFFB', 'fg' => '#2B6CB0'],
+        'snack' => ['bg' => '#F0E7FB', 'fg' => '#6B46C1'],
+    ];
 @endphp
 
-<section id="menu" class="py-24 bg-white relative overflow-hidden">
-    <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute top-0 left-1/4 w-[50%] h-[30%] rounded-full bg-orange-100 blur-[100px]"></div>
-        <div class="absolute bottom-0 right-1/4 w-[50%] h-[30%] rounded-full bg-orange-100 blur-[100px]"></div>
-    </div>
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16 reveal-on-scroll">
-            <div class="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-1.5 text-xs font-bold text-orange-700 mb-4">
-                MENU KAMI
-            </div>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900">Pilih Favoritmu</h2>
-            <p class="mt-3 text-stone-500 max-w-lg mx-auto">Dari Mie Jebew Mentai hingga pangsit goreng renyah — semua dibuat fresh setiap hari</p>
+<section id="menu" class="section">
+    <div class="wrap">
+        <div class="section-head center" data-reveal>
+            <span class="sticker rot-2">Menu Kami</span>
+            <h2 class="section-title display">Pilih Favoritmu</h2>
+            <p class="section-sub head-center">Semua dimasak fresh saat dipesan. Klik tambah, bayar, lalu ambil atau minta diantar.</p>
         </div>
 
-        <div class="flex gap-2.5 overflow-x-auto pb-4 mb-12 scrollbar-hide" id="category-filters">
-            <button class="category-pill pill-active flex-shrink-0 rounded-2xl px-6 py-2.5 text-sm font-bold bg-stone-900 text-white shadow-xl shadow-orange-200/40" data-category="all">
-                Semua
-            </button>
+        <div class="steps-row" data-reveal data-delay="80">
+            <div class="step-card">
+                <span class="step-num display">01</span>
+                <h3 class="display">Pilih Menu</h3>
+                <p>Tambahkan makanan dan minuman favoritmu ke keranjang.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-num display">02</span>
+                <h3 class="display">Isi Data &amp; Bayar</h3>
+                <p>Lengkapi data pesanan, pilih tunai, transfer, QRIS, atau e-wallet.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-num display">03</span>
+                <h3 class="display">Ambil atau Diantar</h3>
+                <p>Lacak status pesananmu sampai siap diambil atau diantar.</p>
+            </div>
+        </div>
+
+        <div class="filter-row" data-reveal>
+            <button type="button" class="filter-pill active" data-filter="all">Semua</button>
             @foreach($categories as $category)
-                <button class="category-pill flex-shrink-0 rounded-2xl px-6 py-2.5 text-sm font-bold bg-white border border-orange-100 text-stone-600 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 transition-all shadow-sm hover:shadow-md" data-category="{{ $category->slug }}">
-                    {{ $category->name }}
-                </button>
+                <button type="button" class="filter-pill" data-filter="{{ $category->slug }}">{{ $category->name }}</button>
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="menu-grid">
+        <div class="menu-grid">
             @foreach($menuItems as $item)
-                <div class="menu-card-hover group bg-white rounded-3xl border border-stone-100/80 overflow-hidden hover:border-orange-300 hover:shadow-xl shadow-lg shadow-stone-100/60" data-category="{{ $item->category->slug }}">
-                    <div class="relative h-48 bg-gradient-to-br from-orange-50 to-stone-50 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-orange-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <div class="relative z-10">
-                            <div class="h-24 w-24 rounded-2xl bg-white shadow-xl shadow-stone-200/80 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 border-4 border-orange-100">
-                                <svg class="h-12 w-12 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                @php
+                    $ill = $illColors[$item->category->slug] ?? ['bg' => '#FFE9B8', 'fg' => '#E4572E'];
+                @endphp
+                <article class="menu-card" data-menu-card data-category="{{ $item->category->slug }}" data-tilt="4" data-reveal="scale" data-delay="{{ ($loop->index % 4) * 70 }}">
+                    <div class="menu-fig" style="--ill-bg: {{ $ill['bg'] }}">
+                        @if($item->image)
+                            <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" loading="lazy">
+                        @else
+                            <div class="menu-ill" style="--ill-fg: {{ $ill['fg'] }}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     @if($item->category->slug === 'mie-jebew')
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+                                        <path d="M4 11h16a1 1 0 0 1 1 1 8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8 1 1 0 0 1 1-1Z"></path>
+                                        <path d="M9 7c0-1.5 1-2 1-3.5"></path>
+                                        <path d="M14 7c0-1.5 1-2 1-3.5"></path>
                                     @elseif($item->category->slug === 'kwetiaw')
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 6h18M3 18h18"/>
+                                        <path d="M4 9c0-2 2-3.5 4-3.5S12 7 12 9s2 3.5 4 3.5S20 11 20 9"></path>
+                                        <path d="M4 15c0-2 2-3.5 4-3.5s4 1.5 4 3.5 2 3.5 4 3.5 4-1.5 4-3.5"></path>
                                     @elseif($item->category->slug === 'burger')
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        <path d="M4 10.5a8 8 0 0 1 16 0Z"></path>
+                                        <path d="M4 14h16"></path>
+                                        <path d="M5 17.5h14a2 2 0 0 0 2-2v-.5H3v.5a2 2 0 0 0 2 2Z"></path>
                                     @elseif($item->category->slug === 'pangsit')
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                        <path d="M7 9c0-2.5 2-4.5 5-4.5S17 6.5 17 9c1.5 1 2.5 2.4 2.5 4.1 0 3.1-3.4 5.4-7.5 5.4S4.5 16.2 4.5 13.1C4.5 11.4 5.5 10 7 9Z"></path>
+                                        <path d="M9 19l-1.5 2M15 19l1.5 2M12 19v2.5"></path>
                                     @elseif($item->category->slug === 'minuman')
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 002-2v10a2 2 0 002 2z"/>
+                                        <path d="M6 8h12l-1.3 11.2a2 2 0 0 1-2 1.8H9.3a2 2 0 0 1-2-1.8L6 8Z"></path>
+                                        <path d="M9 8V5.5A1.5 1.5 0 0 1 10.5 4h1.5"></path>
+                                        <path d="m15 8 2-4.5"></path>
                                     @else
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                        <circle cx="12" cy="12" r="8"></circle>
+                                        <circle cx="9.5" cy="10.5" r="1"></circle>
+                                        <circle cx="14" cy="9.5" r="1"></circle>
+                                        <circle cx="12.5" cy="14.5" r="1"></circle>
                                     @endif
                                 </svg>
                             </div>
-                        </div>
+                        @endif
                         @if($item->is_featured)
-                            <span class="absolute top-4 left-4 rounded-lg bg-stone-900 px-3 py-1 text-[11px] font-bold text-white tracking-wide shadow-xl">UNGGULAN</span>
+                            <span class="corner-badge fav">Favorit</span>
                         @endif
                         @if($item->discount_percent)
-                            <span class="absolute top-4 right-4 rounded-lg bg-red-500 px-3 py-1 text-[11px] font-bold text-white tracking-wide shadow-xl">-{{ $item->discount_percent }}%</span>
+                            <span class="corner-badge promo">-{{ $item->discount_percent }}%</span>
                         @endif
                     </div>
-                    <div class="p-6">
-                        <h3 class="font-bold text-stone-900 text-sm leading-snug group-hover:text-orange-600 transition-colors mb-2">{{ $item->name }}</h3>
-                        <p class="text-xs text-stone-500 leading-relaxed line-clamp-2">{{ $item->description }}</p>
-                        <div class="mt-5 flex items-center justify-between">
+                    <div class="menu-body">
+                        <h3 class="menu-name display">{{ $item->name }}</h3>
+                        <p class="menu-desc clamp-2">{{ $item->description }}</p>
+                        <div class="price-row">
                             <div>
                                 @if($item->discount_price)
-                                    <p class="text-xs text-stone-400 line-through mb-0.5">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
-                                    <p class="text-lg font-extrabold text-orange-600">Rp {{ number_format($item->final_price, 0, ',', '.') }}</p>
+                                    <div class="price-old">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
+                                    <div class="price">Rp {{ number_format($item->final_price, 0, ',', '.') }}</div>
                                 @else
-                                    <p class="text-lg font-extrabold text-orange-600">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                                    <div class="price">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
                                 @endif
                             </div>
-                            <button wire:click="add({{ $item->id }})" class="inline-flex items-center gap-2 rounded-xl bg-stone-900 px-4 py-3 text-xs font-bold text-white hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 active:scale-95">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <button type="button" class="add-btn" data-burst onclick="Livewire.dispatch('addToCart', { id: {{ $item->id }} })">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
                                 Tambah
                             </button>
                         </div>
                     </div>
-                </div>
+                </article>
             @endforeach
         </div>
     </div>
 </section>
-
-@push('scripts')
-<script>
-    document.querySelectorAll('.category-pill').forEach(button => {
-        button.addEventListener('click', () => {
-            document.querySelectorAll('.category-pill').forEach(b => {
-                b.classList.remove('pill-active');
-                b.classList.remove('bg-stone-900', 'text-white', 'shadow-xl', 'shadow-orange-200/40');
-                b.classList.add('bg-white', 'border', 'border-orange-100', 'text-stone-600');
-            });
-            button.classList.add('pill-active');
-            button.classList.remove('bg-white', 'border', 'border-orange-100', 'text-stone-600');
-            const category = button.dataset.category;
-            document.querySelectorAll('#menu-grid .menu-card-hover').forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
-                    card.style.display = '';
-                    card.style.opacity = '0';
-                    setTimeout(() => card.style.opacity = '1', 50);
-                } else {
-                    card.style.opacity = '0';
-                    setTimeout(() => card.style.display = 'none', 300);
-                }
-            });
-        });
-    });
-</script>
-@endpush

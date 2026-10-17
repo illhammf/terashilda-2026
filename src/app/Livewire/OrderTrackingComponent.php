@@ -17,10 +17,8 @@ class OrderTrackingComponent extends Component
 
         $order = Order::with('items')
             ->where('order_number', $this->search)
-            ->orWhere(function ($query) {
-                $query->where('customer_phone', $this->search)
-                    ->where('order_number', $this->search);
-            })
+            ->orWhere('customer_phone', $this->search)
+            ->latest()
             ->first();
 
         if ($order) {

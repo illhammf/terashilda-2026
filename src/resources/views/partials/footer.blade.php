@@ -1,71 +1,83 @@
 @php
     $profile = \App\Models\BusinessProfile::active();
+    $sparkle = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c.8 6.5 4.7 10.4 12 12-7.3 1.6-11.2 5.5-12 12-.8-6.5-4.7-10.4-12-12C7.3 10.4 11.2 6.5 12 0z"/></svg>';
+    $tickerItems = ['Mie Jebew Mentai', 'Kwetiaw', 'Burger', 'Pangsit Goreng', 'Harga Mahasiswa', 'Fresh Tiap Hari', 'Pesan Online'];
 @endphp
 
-<footer class="bg-stone-900 text-white border-t border-stone-800 relative overflow-hidden">
-    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-500"></div>
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div class="md:col-span-2">
-                <div class="flex items-center gap-3 mb-5">
-                    @if($profile && $profile->logo)
-                        <img src="{{ asset('storage/' . $profile->logo) }}" alt="{{ $profile->name }}" class="h-11 w-11 rounded-2xl object-cover shadow-lg shadow-orange-500/20">
-                    @else
-                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 text-white font-extrabold text-sm shadow-lg shadow-orange-500/20">TH</div>
-                    @endif
-                    <div>
-                        <span class="text-xl font-extrabold tracking-tight">{{ $profile->name ?? 'Teras Hilda' }}</span>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-orange-400">{{ $profile->tagline ?? 'Rasanya Beda, Harganya Bersahabat' }}</p>
-                    </div>
-                </div>
-                <p class="text-sm text-stone-400 leading-relaxed max-w-md">{{ $profile->description ?? 'Berbagai makanan lezat untuk menemani harimu.' }}</p>
-                <div class="mt-6 flex gap-4">
+<div class="marquee marquee-dark" aria-hidden="true">
+    <div class="marquee-track">
+        @for($copy = 0; $copy < 2; $copy++)
+            @foreach($tickerItems as $item)
+                <span class="marquee-item">{!! $sparkle !!} {{ $item }}</span>
+            @endforeach
+        @endfor
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="wrap footer-grid">
+            <div>
+                <a href="/" class="logo" style="margin-bottom:18px">
+                    <span class="logo-badge display">
+                        @if($profile && $profile->logo)
+                            <img src="{{ asset('storage/' . $profile->logo) }}" alt="{{ $profile->name }}">
+                        @else
+                            {{ $profile ? strtoupper(substr($profile->name, 0, 2)) : 'TH' }}
+                        @endif
+                    </span>
+                    <span>
+                        <span class="brand-name display" style="color:var(--paper)">{{ $profile->name ?? 'Teras Hilda' }}</span><br>
+                        <span class="brand-tag">{{ $profile->tagline ?? 'Rasanya Beda' }}</span>
+                    </span>
+                </a>
+                <p style="font-size:0.88rem;line-height:1.75;color:rgba(255,246,233,0.72);max-width:42ch">{{ $profile->description ?? 'Makanan fresh setiap hari dengan harga bersahabat untuk semua.' }}</p>
+                <div style="display:flex;gap:12px;margin-top:22px">
                     @if($profile && $profile->instagram)
-                        <a href="https://instagram.com/{{ ltrim($profile->instagram, '@') }}" target="_blank" class="flex h-11 w-11 items-center justify-center rounded-xl bg-stone-800 text-stone-400 hover:bg-orange-500 hover:text-white hover:shadow-xl shadow-orange-500/20 transition-all">
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        <a href="https://instagram.com/{{ ltrim($profile->instagram, '@') }}" target="_blank" rel="noopener" class="social-btn" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"></circle></svg>
                         </a>
                     @endif
                     @if($profile && $profile->tiktok)
-                        <a href="https://tiktok.com/{{ ltrim($profile->tiktok, '@') }}" target="_blank" class="flex h-11 w-11 items-center justify-center rounded-xl bg-stone-800 text-stone-400 hover:bg-orange-500 hover:text-white hover:shadow-xl shadow-orange-500/20 transition-all">
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                        <a href="https://tiktok.com/{{ ltrim($profile->tiktok, '@') }}" target="_blank" rel="noopener" class="social-btn" aria-label="TikTok">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5.02c1.3-.02 2.6-.01 3.9-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
                         </a>
                     @endif
                     @if($profile && $profile->whatsapp)
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile->whatsapp) }}" target="_blank" class="flex h-11 w-11 items-center justify-center rounded-xl bg-stone-800 text-stone-400 hover:bg-green-500 hover:text-white hover:shadow-xl shadow-green-500/20 transition-all">
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile->whatsapp) }}" target="_blank" rel="noopener" class="social-btn" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.07-.12-.27-.2-.57-.35M12.05 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.69 1.45h.01c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.17-3.49-8.41Z"/></svg>
                         </a>
                     @endif
                 </div>
             </div>
             <div>
-                <h3 class="text-sm font-bold uppercase tracking-widest text-stone-400 mb-5">Navigasi</h3>
-                <ul class="space-y-3 text-sm text-stone-400">
-                    <li><a href="#menu" class="hover:text-orange-400 transition-colors">Menu</a></li>
-                    <li><a href="#tentang" class="hover:text-orange-400 transition-colors">Tentang Kami</a></li>
-                    <li><a href="#testimoni" class="hover:text-orange-400 transition-colors">Testimoni</a></li>
-                    <li><a href="#kontak" class="hover:text-orange-400 transition-colors">Kontak</a></li>
-                    <li><a href="{{ route('order.tracking') }}" class="hover:text-orange-400 transition-colors">Lacak Pesanan</a></li>
-                </ul>
+                <h3 class="footer-title">Jelajahi</h3>
+                <a href="/#menu" class="footer-link">Menu Kami</a>
+                <a href="/#tentang" class="footer-link">Tentang Kami</a>
+                <a href="/#testimoni" class="footer-link">Testimoni</a>
+                <a href="/#kontak" class="footer-link">Kontak</a>
+                <a href="{{ route('order.tracking') }}" class="footer-link">Lacak Pesanan</a>
             </div>
             <div>
-                <h3 class="text-sm font-bold uppercase tracking-widest text-stone-400 mb-5">Jam Buka</h3>
+                <h3 class="footer-title">Jam Buka</h3>
                 @if($profile && $profile->opening_hours)
-                    <ul class="space-y-3 text-sm text-stone-400">
-                        @foreach($profile->opening_hours as $day => $hours)
-                            <li class="flex justify-between gap-4"><span class="text-stone-500">{{ $day }}</span><span class="text-white">{{ $hours }}</span></li>
-                        @endforeach
-                    </ul>
+                    @foreach($profile->opening_hours as $day => $hours)
+                        <div class="footer-hours"><b>{{ $day }}</b><span>{{ $hours }}</span></div>
+                    @endforeach
                 @else
-                    <ul class="space-y-3 text-sm text-stone-400">
-                        <li class="flex justify-between gap-4"><span class="text-stone-500">Senin - Jumat</span><span class="text-white">09:00 - 21:00</span></li>
-                        <li class="flex justify-between gap-4"><span class="text-stone-500">Sabtu - Minggu</span><span class="text-white">10:00 - 22:00</span></li>
-                    </ul>
+                    <div class="footer-hours"><b>Senin - Jumat</b><span>09.00 - 21.00</span></div>
+                    <div class="footer-hours"><b>Sabtu - Minggu</b><span>10.00 - 22.00</span></div>
                 @endif
+                <div style="margin-top:18px;font-size:0.85rem;line-height:1.7;color:rgba(255,246,233,0.75)">
+                    <div>{{ $profile->address ?? 'Jl. Pendidikan No. 45, Yogyakarta' }}</div>
+                    <div>{{ $profile->phone ?? '0274-123456' }}</div>
+                </div>
             </div>
         </div>
-        <div class="mt-12 pt-8 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p class="text-sm text-stone-500">&copy; {{ date('Y') }} {{ $profile->name ?? 'Teras Hilda' }}. All rights reserved.</p>
-            <p class="text-xs text-stone-600">Dibuat dengan Laravel & Filament</p>
+        <div class="wrap footer-bottom">
+            <span>&copy; {{ date('Y') }} {{ $profile->name ?? 'Teras Hilda' }}. Semua hak dilindungi.</span>
+            <span>Dibuat dengan Laravel & Filament</span>
         </div>
+        <div class="watermark">{{ strtoupper($profile->name ?? 'Teras Hilda') }}</div>
     </div>
 </footer>

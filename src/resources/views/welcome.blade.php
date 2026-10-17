@@ -9,5 +9,4 @@
     @include('sections.about')
     @include('sections.testimonials')
     @include('sections.contact')
-    @include('sections.cart-sidebar')
 @endsection
